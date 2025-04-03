@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Pusher Test</title>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .log { background: #f5f5f5; padding: 15px; border-radius: 5px; max-height: 400px; overflow: auto; }
+        .log-entry { margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        button { padding: 8px 16px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Direct Pusher Test</h1>
+    <p>This page connects directly to Reverb/Pusher and logs all events.</p>
+
+    <button id="test-btn">Send Test Message</button>
+
+    <h2>Event Log:</h2>
+    <div class="log" id="log"></div>
+
+    <script>
+        // Configure with your Reverb settings
+        const config = {
+            key: 'ckxsrpzwq1dtqufcrfkw',
+            host: 'localhost',
+            port: 8080
+        };
+
+        // Function to add log entry
+        function log(message) {
+            const logEl = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.prepend(entry);
+        }
+
+        // Enable debug
+        Pusher.logToConsole = true;
+
+        // Initialize Pusher
+        const pusher = new Pusher(config.key, {
+            wsHost: config.host,
+            wsPort: config.port,
+            wssPort: config.port,
+            forceTLS: false,
+            enabledTransports: ['ws', 'wss'],
+            disableStats: true
+        });
+
+        // Log connection status
+        pusher.connection.bind('connected', () => {
+            log('✅ Connected to WebSocket server');
+        });
+
+        pusher.connection.bind('error', (error) => {
+            log('❌ Connection error: ' + JSON.stringify(error));
+        });
+
+        // Subscribe to test channel
+        const channel = pusher.subscribe('test-channel');
+        log('Subscribing to test-channel');
+
+        // Listen for subscription success
+        channel.bind('pusher:subscription_succeeded', () => {
+            log('✅ Successfully subscribed to channel');
+        });
+
+        // Listen for all events on this channel
+        channel.bind_global((event, data) => {
+            log(`📢 Received event: ${event}`);
+            log(`📊 Data: ${JSON.stringify(data)}`);
+
+            if (data && data.message) {
+                log(`💬 Message content: ${data.message}`);
+            }
+        });
+
+        // Add specific listeners for our test event
+        ['App\\Events\\TestEvent', 'TestEvent', '.TestEvent'].forEach(eventName => {
+            channel.bind(eventName, (data) => {
+                log(`✅ Matched specific event: ${eventName}`);
+                log(`📝 Event data: ${JSON.stringify(data)}`);
+            });
+        });
+
+        // Add test button functionality
+        document.getElementById('test-btn').addEventListener('click', () => {
+            log('🚀 Sending test message...');
+            fetch('/reverb-test')
+                .then(res => res.text())
+                .then(text => {
+                    log(`✅ Server response: ${text}`);
+                })
+                .catch(err => {
+                    log(`❌ Error: ${err}`);
+                });
+        });
+    </script>
+</body>
+</html>
