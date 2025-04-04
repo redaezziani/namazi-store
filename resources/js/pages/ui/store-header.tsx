@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AuthLinks from './nav-comps/auth-links';
 import Cart from './nav-comps/cart';
+import SearchProducts from './nav-comps/search';
 
 const StoreHeader = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -59,7 +60,9 @@ const StoreHeader = () => {
                 {/* User Links - Desktop */}
                 <div className="hidden md:flex space-x-6 items-center" role="navigation" aria-label="User navigation">
                     <Cart />
+                    <SearchProducts />
                     <AuthLinks />
+
                     {/* {userLinks.map((link) => (
                         <Link
                             key={link.name}
