@@ -73,7 +73,7 @@ export default function ProductsTable() {
     const [pagination, setPagination] = useState({
         currentPage: 1,
         lastPage: 1,
-        perPage: 9,
+        perPage: 8,
         total: 0,
         from: 0,
         to: 0,

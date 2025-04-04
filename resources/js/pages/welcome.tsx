@@ -4,6 +4,7 @@ import BestForYou from './ui/best-for-you';
 import NewInStore from './ui/new-in-store';
 import CardsGroup from './ui/card-group/card-group';
 
+
 const welcome = () => {
     return (
         <StoreLayout>
@@ -17,6 +18,7 @@ const welcome = () => {
                 url="/products/best-for-you"
                 data={[1,2,3,4,5,6,7,8]}
             />
+            
         </StoreLayout>
     );
 };
