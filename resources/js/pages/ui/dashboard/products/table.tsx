@@ -6,9 +6,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Delete } from 'lucide-react';
 import FilterBar, { FilterValues } from './filter-bar';
 import { ProductSheet } from './product-sheet';
+import DeleteProduct from './delete';
 
 // Enhanced Product interface with more properties
 interface Product {
@@ -72,7 +73,7 @@ export default function ProductsTable() {
     const [pagination, setPagination] = useState({
         currentPage: 1,
         lastPage: 1,
-        perPage: 11,
+        perPage: 9,
         total: 0,
         from: 0,
         to: 0,
@@ -243,6 +244,7 @@ export default function ProductsTable() {
                             <TableHead className="h-11 text-right">Price</TableHead>
                             <TableHead className="h-11 text-right">Stock</TableHead>
                             <TableHead className="h-11 text-right">Created</TableHead>
+                            <TableHead className="h-11 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -329,6 +331,20 @@ export default function ProductsTable() {
                                     </TableCell>
                                     <TableCell className="text-muted-foreground text-right text-xs">
                                         {new Date(product.created_at!).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell className="flex items-center justify-end gap-2 text-right">
+                                        <DeleteProduct
+                                        id={product.id}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsAddProductOpen(true);
+                                            }}
+                                            className="text-primary hover:text-primary/80"
+                                        >
+                                            Edit
+                                        </button>
                                     </TableCell>
                                 </TableRow>
                             ))

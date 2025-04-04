@@ -107,7 +107,7 @@ export function ProductSheet({ isOpen = false, onOpenChange, onSuccess, categori
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto">
+                <Button  className="w-full sm:w-auto">
                     Add Product
                 </Button>
             </SheetTrigger>
