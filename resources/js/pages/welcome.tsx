@@ -15,7 +15,7 @@ const welcome = () => {
                 description="Discover our curated selection of products tailored just for you."
                 urlQuery="best-for-you"
                 url="/products/best-for-you"
-                data={[]}
+                data={[1,2,3,4,5,6,7,8]}
             />
         </StoreLayout>
     );
