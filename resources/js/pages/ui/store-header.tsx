@@ -1,5 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import AuthLinks from './nav-comps/auth-links';
+import Cart from './nav-comps/cart';
 
 const StoreHeader = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,7 +58,9 @@ const StoreHeader = () => {
 
                 {/* User Links - Desktop */}
                 <div className="hidden md:flex space-x-6 items-center" role="navigation" aria-label="User navigation">
-                    {userLinks.map((link) => (
+                    <Cart />
+                    <AuthLinks />
+                    {/* {userLinks.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
@@ -84,7 +88,7 @@ const StoreHeader = () => {
                                 link.name
                             )}
                         </Link>
-                    ))}
+                    ))} */}
                 </div>
 
                 {/* Mobile Menu Button */}
