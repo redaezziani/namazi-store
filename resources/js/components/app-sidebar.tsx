@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { ShoppingBag, Tag, LayoutGrid, Users, ShoppingCart, Heart, Percent, Ticket, Layers } from 'lucide-react';
+import { Heart, Layers, LayoutGrid, Percent, ShoppingBag, ShoppingCart, Tag, Ticket, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -65,9 +65,7 @@ const footerNavItems: NavItem[] = [
 
 export function AppSidebar() {
     return (
-        <Sidebar
-        side="left"
-        collapsible="icon" variant="sidebar">
+        <Sidebar side="left" collapsible="icon" variant="sidebar">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
