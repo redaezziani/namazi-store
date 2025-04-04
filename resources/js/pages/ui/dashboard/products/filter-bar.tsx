@@ -107,7 +107,7 @@ export default function FilterBar({ onFilterChange, categories }: FilterBarProps
   const activeFilterCount = getActiveFilterCount();
 
   return (
-    <div className="mb-6 w-full space-y-4">
+    <div className=" w-full space-y-4">
       <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
         <div className="relative w-full max-w-md">
           <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
