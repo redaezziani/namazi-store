@@ -4,57 +4,70 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Calendar, FileText, GraduationCap } from 'lucide-react';
+import { ShoppingBag, Tag, LayoutGrid, Users, ShoppingCart, Heart, Percent, Ticket, Layers } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'لوحة المعلومات',
+        title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
     },
     {
-        title: 'الطلاب',
-        href: '/students',
+        title: 'Products',
+        href: '/products',
+        icon: ShoppingBag,
+    },
+    {
+        title: 'Categories',
+        href: '/categories',
+        icon: Layers,
+    },
+    {
+        title: 'Orders',
+        href: '/orders',
+        icon: ShoppingCart,
+    },
+    {
+        title: 'Customers',
+        href: '/users',
         icon: Users,
     },
     {
-        title: 'الفصول الدراسية',
-        href: '/classrooms',
-        icon: GraduationCap,
+        title: 'Discounts',
+        href: '/discounts',
+        icon: Percent,
     },
     {
-        title: 'الجدول الدراسي',
-        href: '/schedule',
-        icon: Calendar,
+        title: 'Coupons',
+        href: '/coupons',
+        icon: Ticket,
     },
     {
-        title: 'الاختبارات',
-        href: '/exams',
-        icon: FileText,
+        title: 'Favorites',
+        href: '/favorites',
+        icon: Heart,
     },
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'المساعدة',
-        href: '/help',
-        icon: Folder,
+        title: 'Reports',
+        href: '/reports',
+        icon: Tag,
     },
     {
-        title: 'دليل المستخدم',
-        href: '/user-guide',
-        icon: BookOpen,
+        title: 'Store Settings',
+        href: '/settings',
+        icon: ShoppingBag,
     },
 ];
 
 export function AppSidebar() {
     return (
         <Sidebar
-        side='right'
-        className=' text-right'
-        lang='ar'
-        collapsible="icon" variant="inset">
+        side="left"
+        collapsible="icon" variant="sidebar">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
