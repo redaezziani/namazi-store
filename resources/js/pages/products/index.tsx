@@ -5,13 +5,8 @@ import ProductsTable from '../ui/dashboard/products/table'
 const Index = () => {
   return (
     <AppLayout>
-        <div className="flex flex-col justify-start items-start p-8">
-            <h1 className="text-xl font-bold">
-                Products
-            </h1>
-            <p className=" ">
-                Welcome to the products page!
-            </p>
+        <div className="flex flex-col justify-start items-start px-8">
+            
             <ProductsTable />
         </div>
     </AppLayout>
