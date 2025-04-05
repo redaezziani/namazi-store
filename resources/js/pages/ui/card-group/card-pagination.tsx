@@ -7,12 +7,14 @@ type PaginationProps = {
   currentPage: number
   totalPages: number
   paginationItemsToDisplay?: number
+  onPageChange?: (page: number) => void
 }
 
 export default function CardsPagination({
   currentPage,
   totalPages,
   paginationItemsToDisplay = 5,
+  onPageChange,
 }: PaginationProps) {
   const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
     currentPage,
@@ -20,18 +22,29 @@ export default function CardsPagination({
     paginationItemsToDisplay,
   })
 
+  const handleClick = (page: number) => {
+    if (onPageChange) {
+      onPageChange(page);
+    }
+  }
+
   return (
-    <nav className="flex  w-full justify-between mt-8">
-        <Link
-            href="#"
-            className="text-sm font-medium text-gray-800 hover:text-gray-600"
-            >
-            View All
-        </Link>
+    <nav className="flex w-full justify-between mt-8">
+      <Link
+        href="#"
+        className="text-sm font-medium text-gray-800 hover:text-gray-600"
+      >
+        View All
+      </Link>
       <ul className="flex items-center space-x-1">
         <li>
           <button
-            className={`flex items-center justify-center w-8 h-8  transition-colors `}
+            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              currentPage === 1 
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-gray-800 hover:bg-gray-100'
+            }`}
+            onClick={() => currentPage > 1 && handleClick(currentPage - 1)}
             disabled={currentPage === 1}
             aria-label="Go to previous page"
           >
@@ -50,7 +63,12 @@ export default function CardsPagination({
         {pages.map((page) => (
           <li key={page}>
             <button
-              className={`flex items-center justify-center w-8 h-8  text-sm font-medium transition-colors `}
+              onClick={() => handleClick(page)}
+              className={`flex items-center justify-center w-8 h-8 rounded-md text-sm font-medium transition-colors ${
+                currentPage === page
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-800 hover:bg-gray-100'
+              }`}
               aria-label={`Page ${page}`}
               aria-current={currentPage === page ? "page" : undefined}
             >
@@ -69,7 +87,12 @@ export default function CardsPagination({
         {/* Next button */}
         <li>
           <button
-            className={`flex items-center justify-center w-8 h-8  transition-colors `}
+            className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              currentPage === totalPages 
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-gray-800 hover:bg-gray-100'
+            }`}
+            onClick={() => currentPage < totalPages && handleClick(currentPage + 1)}
             disabled={currentPage === totalPages}
             aria-label="Go to next page"
           >

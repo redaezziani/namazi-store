@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RabbitMQController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\StoreProductController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -40,3 +41,6 @@ Route::middleware('auth:sanctum')->group(function() {
     // Favorites routes
     // Route::apiResource('favorites', FavoriteController::class);
 });
+
+// this is for store product
+Route::get('/store/products', [StoreProductController::class, 'getAllProducts']);
