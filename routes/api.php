@@ -22,7 +22,7 @@ Route::prefix('products')->group(function () {
 });
 
 // Add additional API routes for other resources
-Route::middleware('auth:sanctum')->group(function() {
+Route::middleware('auth:sanctum')->group(function () {
     // Category routes
     // Route::apiResource('categories', CategoryController::class);
 

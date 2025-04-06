@@ -1,0 +1,22 @@
+.size-selector-swiper {
+    width: 100%;
+    padding: 0 0.5rem;
+}
+
+.size-selector-swiper .swiper-slide {
+    width: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.size-selector-swiper .swiper-button-next,
+.size-selector-swiper .swiper-button-prev {
+    color: #333;
+    width: 20px;
+    height: 20px;
+}
+
+.size-selector-swiper .swiper-button-next:after,
+.size-selector-swiper .swiper-button-prev:after {
+    font-size: 12px;
+}

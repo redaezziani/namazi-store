@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\ProductScraperController;
 
 require __DIR__.'/auth.php';
 require __DIR__.'/settings.php';
@@ -35,8 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             })->name('products.index');
         });
     })->name('dashboard');
+});
 
-
+Route::middleware(['auth'])->group(function () {
+    // Admin product scraping routes
 });
 
 

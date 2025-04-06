@@ -66,8 +66,8 @@ export default function CardsPagination({
               onClick={() => handleClick(page)}
               className={`flex items-center justify-center w-8 h-8 rounded-md text-sm font-medium transition-colors ${
                 currentPage === page
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-800 hover:bg-gray-100'
+                  ? ' font-semibold text-neutral-900'
+                  : ' text-neutral-600'
               }`}
               aria-label={`Page ${page}`}
               aria-current={currentPage === page ? "page" : undefined}
