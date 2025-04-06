@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { router, usePage } from '@inertiajs/react'; // Add this import
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
+import axios from 'axios';
 
 interface Product {
     id: string | number;
@@ -19,6 +21,7 @@ interface Product {
     sizes?: string[];
     is_featured: boolean;
     category: string;
+    is_favorited?: boolean;
 }
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -28,11 +31,14 @@ const ProductCard = ({ product }: { product: Product }) => {
 
     const productUrl = `/products/${product?.slug || product.id}`;
 
-    const handleAddToCart = () => {};
+    const handleAddToCart = () => {
+        // not implemented yet
+    };
 
     return (
         <article className="group col-span-1 flex w-full flex-col overflow-hidden transition-shadow">
             <div className="border-border relative flex h-[30rem] justify-center border bg-neutral-200">
+                <img src={product.cover_image} className=' w-full object-contain' alt=''/>
                 {product.sizes && product.sizes.length > 0 && (
                     <SizeSelector sizes={product.sizes} onSizeSelect={(size) => setSelectedSize(size)} selectedSize={selectedSize ?? ''} />
                 )}
@@ -43,36 +49,56 @@ const ProductCard = ({ product }: { product: Product }) => {
                     <p className="text-sm text-gray-500">{product.price} DH </p>
                 </div>
                 <div className="flex items-center">
-                    <LikeProduct
-                    id={product.id}
-                    isLiked={true}
-                    />
+                    <FavoriteProduct isFavorited={product.is_favorited ?? false} id={product.id} />
                 </div>
             </div>
         </article>
     );
 };
 
-interface LikeProductProps {
-    isLiked: boolean;
-    id: string | number ;
+interface FavoriteProductProps {
+    isFavorited: boolean;
+    id: string | number;
 }
 
-const LikeProduct =  ({ isLiked, id }:LikeProductProps) => {
-    
-    const handelProductLike =async ()=>{
-        // not implement 
-    }
+const FavoriteProduct = ({ isFavorited, id }: FavoriteProductProps) => {
+    const props = usePage().props
+    const { auth } = props;
+    const [favorited, setFavorited] = useState(isFavorited);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleProductLike = async () => {
+        setIsLoading(true);
+        try {
+            const res = await axios.post(`/api/store/products/${id}/favorite`, {
+                is_favorited: !favorited,
+            });
+            setFavorited(!favorited); 
+            setIsLoading(false);            
+            
+
+        } catch (error) {
+            console.error('Error:', error);
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <button
-        id={`liked-${id}-product`}
-        onClick={handelProductLike}
+        <button 
+            id={`favorite-product-${id}`} 
+            onClick={handleProductLike} 
+            disabled={isLoading}
+            className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
         >
             <svg
-            
-            xmlns="http://www.w3.org/2000/svg"
-             className={`h-5 w-5 ${isLiked ? " text-rose-600" : ""  }`}
-              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-5 w-5 cursor-pointer transition-colors duration-200 ${
+                    favorited ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-gray-600'
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
                 <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -83,6 +109,7 @@ const LikeProduct =  ({ isLiked, id }:LikeProductProps) => {
         </button>
     );
 };
+
 
 interface SizeSelectorProps {
     sizes: string[];

@@ -41,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Favorites routes
     // Route::apiResource('favorites', FavoriteController::class);
 });
+Route::post('/store/products/{id}/favorite', [StoreProductController::class, 'setFavorite']);
 
 // this is for store product
 Route::get('/store/products', [StoreProductController::class, 'getAllProducts']);
+// set the product as favorite
+
