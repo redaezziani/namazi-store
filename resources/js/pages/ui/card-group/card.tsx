@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { router, usePage } from '@inertiajs/react'; // Add this import
-
+import {  usePage } from '@inertiajs/react'; // Add this import
+import {motion, AnimatePresence } from "motion/react"
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -39,9 +39,14 @@ const ProductCard = ({ product }: { product: Product }) => {
         <article className="group col-span-1 flex w-full flex-col overflow-hidden transition-shadow">
             <div className="border-border relative flex h-[30rem] justify-center border bg-neutral-200">
                 <img src={product.cover_image} className=' w-full object-contain' alt=''/>
+                <AnimatePresence
+                    initial={false}
+                    onExitComplete={() => null}
+                >
                 {product.sizes && product.sizes.length > 0 && (
                     <SizeSelector sizes={product.sizes} onSizeSelect={(size) => setSelectedSize(size)} selectedSize={selectedSize ?? ''} />
                 )}
+                </AnimatePresence>
             </div>
             <div className="flex items-center justify-between py-1">
                 <div className="flex flex-col items-start justify-start gap-1">
@@ -73,9 +78,9 @@ const FavoriteProduct = ({ isFavorited, id }: FavoriteProductProps) => {
             const res = await axios.post(`/api/store/products/${id}/favorite`, {
                 is_favorited: !favorited,
             });
-            setFavorited(!favorited); 
-            setIsLoading(false);            
-            
+            setFavorited(!favorited);
+            setIsLoading(false);
+
 
         } catch (error) {
             console.error('Error:', error);
@@ -84,9 +89,9 @@ const FavoriteProduct = ({ isFavorited, id }: FavoriteProductProps) => {
     };
 
     return (
-        <button 
-            id={`favorite-product-${id}`} 
-            onClick={handleProductLike} 
+        <button
+            id={`favorite-product-${id}`}
+            onClick={handleProductLike}
             disabled={isLoading}
             className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
         >
@@ -135,7 +140,13 @@ const SizeSelector = ({ sizes = [], onSizeSelect, selectedSize }: SizeSelectorPr
     };
 
     return (
-        <div className="absolute bottom-2 hidden w-[80%] items-center gap-2 rounded-sm bg-white p-1.5 transition-all duration-500 ease-in-out group-hover:flex">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
+            
+            className="absolute bottom-2 hidden w-[80%] items-center gap-2 rounded-sm bg-white p-1.5 transition-all duration-500 ease-in-out group-hover:flex">
             {!isBeginning && (
                 <button
                     onClick={handlePrev}
@@ -200,7 +211,7 @@ const SizeSelector = ({ sizes = [], onSizeSelect, selectedSize }: SizeSelectorPr
                     </svg>
                 </button>
             )}
-        </div>
+        </motion.div>
     );
 };
 
