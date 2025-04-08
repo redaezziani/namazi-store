@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { usePage } from '@inertiajs/react';
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -37,6 +37,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     const { addItem, isInCart } = useCartStore();
     const productUrl = `/products/${product?.slug || product.id}`;
     const [addedToCart, setAddedToCart] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
 
     const handleAddToCart = (size: string) => {
         if (!product.price) return;
@@ -67,21 +68,24 @@ const ProductCard = ({ product }: { product: Product }) => {
     };
 
     return (
-        <article className="group col-span-1 flex w-full flex-col overflow-hidden transition-shadow">
+        <article
+            className="group col-span-1 flex w-full flex-col overflow-hidden transition-shadow"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+        >
             <div className="border-border relative flex h-[30rem] justify-center border bg-neutral-200">
                 <img src={product.cover_image} className='w-full object-contain' alt=''/>
-                <AnimatePresence
-                    initial={false}
-                    onExitComplete={() => null}
-                >
                 {product.sizes && product.sizes.length > 0 && (
-                    <SizeSelector
-                        sizes={product.sizes}
-                        onSizeSelect={handleSizeSelect}
-                        selectedSize={selectedSize ?? ''}
-                    />
+                    <AnimatePresence>
+                        {isHovering && (
+                            <SizeSelector
+                                sizes={product.sizes}
+                                onSizeSelect={handleSizeSelect}
+                                selectedSize={selectedSize ?? ''}
+                            />
+                        )}
+                    </AnimatePresence>
                 )}
-                </AnimatePresence>
 
                 <AnimatePresence>
                     {addedToCart && (
@@ -194,8 +198,9 @@ const SizeSelector = ({ sizes = [], onSizeSelect, selectedSize }: SizeSelectorPr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-            className="absolute bottom-2 hidden w-[80%] items-center gap-2 rounded-sm bg-white p-1.5 transition-all duration-500 ease-in-out group-hover:flex">
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="absolute bottom-2 w-[80%] items-center gap-2 rounded-sm bg-white p-1.5 flex"
+        >
             {!isBeginning && (
                 <button
                     onClick={handlePrev}
