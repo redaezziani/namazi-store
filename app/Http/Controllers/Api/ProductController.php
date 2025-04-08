@@ -200,4 +200,41 @@ class ProductController extends Controller
             'message' => 'Product deleted successfully'
         ]);
     }
+
+    /**
+     * Search for products based on a query string.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+        $limit = $request->get('limit', 10);
+
+        if (empty($query)) {
+            return response()->json([
+                'data' => []
+            ]);
+        }
+
+        $products = Product::where('name', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
+            ->orWhere('sku', 'like', "%{$query}%")
+            ->with('category')
+            ->limit($limit)
+            ->get();
+
+        // Transform the data to include additional fields and format
+        $products->transform(function ($product) {
+            $product->stock = $product->quantity; // Map quantity to stock for frontend
+            $product->status = $product->is_active ? 'active' : 'inactive';
+            $product->category_name = $product->category ? $product->category->name : 'Uncategorized';
+            return $product;
+        });
+
+        return response()->json([
+            'data' => $products
+        ]);
+    }
 }

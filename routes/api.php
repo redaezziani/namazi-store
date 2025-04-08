@@ -21,6 +21,9 @@ Route::prefix('products')->group(function () {
     Route::delete('/{id}', [ProductController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
+// Product search routes
+Route::get('/products/search', [ProductController::class, 'search']);
+
 // Add additional API routes for other resources
 Route::middleware('auth:sanctum')->group(function () {
     // Category routes
@@ -41,6 +44,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Favorites routes
     // Route::apiResource('favorites', FavoriteController::class);
 });
+
+// Store search routes
+Route::get('/store/products/search', [StoreProductController::class, 'searchProducts']);
+
+// Search history routes (for authenticated users only)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/store/search/history', [StoreProductController::class, 'saveSearchHistory']);
+    Route::get('/store/search/history', [StoreProductController::class, 'getSearchHistory']);
+    Route::delete('/store/search/history', [StoreProductController::class, 'clearSearchHistory']);
+});
+
 Route::post('/store/products/{id}/favorite', [StoreProductController::class, 'setFavorite']);
 
 // this is for store product
