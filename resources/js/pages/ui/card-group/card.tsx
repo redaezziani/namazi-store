@@ -1,12 +1,16 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import {  usePage } from '@inertiajs/react'; // Add this import
-import {motion, AnimatePresence } from "motion/react"
+import { usePage } from '@inertiajs/react';
+import { motion, AnimatePresence } from "motion/react";
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import axios from 'axios';
+import { useCartStore } from '@/stores/useCartStore';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Product {
     id: string | number;
@@ -25,33 +29,79 @@ interface Product {
 }
 
 const ProductCard = ({ product }: { product: Product }) => {
-    const displayPrice = product?.price !== undefined && product?.price !== null ? `$${Number(product.price).toFixed(2)}` : 'Price not available';
+    const displayPrice = product?.price !== undefined && product?.price !== null
+        ? formatCurrency(Number(product.price))
+        : 'Price not available';
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const stockAmount = product?.stock ?? 0;
-
+    const { addItem, isInCart } = useCartStore();
     const productUrl = `/products/${product?.slug || product.id}`;
+    const [addedToCart, setAddedToCart] = useState(false);
 
-    const handleAddToCart = () => {
-        // not implemented yet
+    const handleAddToCart = (size: string) => {
+        if (!product.price) return;
+
+        // Add item to cart with all necessary information
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: Number(product.price),
+            image: product.cover_image,
+            size: size,
+            sku: product.sku,
+        });
+
+        // Show visual feedback
+        setAddedToCart(true);
+        toast("Added to cart");
+
+        // Reset visual feedback after delay
+        setTimeout(() => {
+            setAddedToCart(false);
+        }, 2000);
+    };
+
+    const handleSizeSelect = (size: string) => {
+        setSelectedSize(size);
+        handleAddToCart(size);
     };
 
     return (
         <article className="group col-span-1 flex w-full flex-col overflow-hidden transition-shadow">
             <div className="border-border relative flex h-[30rem] justify-center border bg-neutral-200">
-                <img src={product.cover_image} className=' w-full object-contain' alt=''/>
+                <img src={product.cover_image} className='w-full object-contain' alt=''/>
                 <AnimatePresence
                     initial={false}
                     onExitComplete={() => null}
                 >
                 {product.sizes && product.sizes.length > 0 && (
-                    <SizeSelector sizes={product.sizes} onSizeSelect={(size) => setSelectedSize(size)} selectedSize={selectedSize ?? ''} />
+                    <SizeSelector
+                        sizes={product.sizes}
+                        onSizeSelect={handleSizeSelect}
+                        selectedSize={selectedSize ?? ''}
+                    />
                 )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {addedToCart && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="absolute bottom-24 left-0 right-0 flex justify-center"
+                        >
+                            <div className="rounded-full bg-black px-4 py-2 text-sm text-white shadow-lg">
+                                Added to cart
+                            </div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
             </div>
             <div className="flex items-center justify-between py-1">
                 <div className="flex flex-col items-start justify-start gap-1">
                     <h3 className="text-sm font-medium text-gray-800 hover:text-gray-600">{product.name}</h3>
-                    <p className="text-sm text-gray-500">{product.price} DH </p>
+                    <p className="text-sm text-gray-500">{displayPrice}</p>
                 </div>
                 <div className="flex items-center">
                     <FavoriteProduct isFavorited={product.is_favorited ?? false} id={product.id} />
@@ -145,7 +195,6 @@ const SizeSelector = ({ sizes = [], onSizeSelect, selectedSize }: SizeSelectorPr
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.5 }}
-            
             className="absolute bottom-2 hidden w-[80%] items-center gap-2 rounded-sm bg-white p-1.5 transition-all duration-500 ease-in-out group-hover:flex">
             {!isBeginning && (
                 <button
@@ -181,10 +230,15 @@ const SizeSelector = ({ sizes = [], onSizeSelect, selectedSize }: SizeSelectorPr
                 {sizes.map((size) => (
                     <SwiperSlide key={size} className="!w-auto">
                         <button
-                            className={`min-w-8 cursor-pointer rounded border border-gray-300 px-2 py-1 text-xs font-semibold transition-colors duration-200 duration-500 hover:bg-gray-100 ${selectedSize === size ? 'border-neutral-900' : ''}`}
+                            className={`
+                                min-w-8 cursor-pointer rounded border px-2 py-1 text-xs font-semibold
+                                transition-colors duration-200
+                                ${selectedSize === size
+                                    ? 'border-neutral-900 bg-neutral-900 text-white'
+                                    : 'border-gray-300 hover:bg-gray-100'}
+                            `}
                             type="button"
                             aria-label={`Select size ${size}`}
-                            disabled={size === selectedSize}
                             onClick={() => handleSizeSelect(size)}
                         >
                             {size}
