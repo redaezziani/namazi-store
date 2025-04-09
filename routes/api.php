@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RabbitMQController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\StoreProductController;
+use App\Http\Controllers\ScrapeController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -57,7 +58,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/store/products/{id}/favorite', [StoreProductController::class, 'setFavorite']);
 
-// this is for store product
 Route::get('/store/products', [StoreProductController::class, 'getAllProducts']);
-// set the product as favorite
+
+// scrape
+Route::post('/scrape', [ScrapeController::class, 'store']);
 

@@ -54,7 +54,16 @@ const ProductCard = ({ product }: { product: Product }) => {
 
         // Show visual feedback
         setAddedToCart(true);
-        toast("Added to cart");
+        toast("Added to cart",{
+            description: "Item has been added to your cart",
+            duration: 2000,
+            action: {
+                label: "View Cart",
+                onClick: () => {
+                    window.location.href = '/cart';
+                },
+            },
+        });
 
         // Reset visual feedback after delay
         setTimeout(() => {

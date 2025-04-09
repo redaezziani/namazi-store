@@ -19,6 +19,11 @@ class Product extends Model
         'slug',
         'description',
         'price',
+        'original_price',
+        'discount',
+        'currency',
+        'rating',
+        'shipping',
         'colors',
         'sizes',
         'quantity',
@@ -31,6 +36,7 @@ class Product extends Model
         'category_id',
     ];
 
+
     /**
      * The attributes that should be cast.
      *
@@ -42,7 +48,12 @@ class Product extends Model
         'preview_images' => 'array',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
+        'price' => 'float',
+        'original_price' => 'float',
+        'rating' => 'integer',
+        'quantity' => 'integer',
     ];
+
 
     /**
      * Get the category that owns the product.

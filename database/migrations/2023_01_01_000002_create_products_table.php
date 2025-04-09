@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('type'); // shoes, pants, jewelry, etc.
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(true);
+            $table->string('shipping')->default('Standard Shipping');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
