@@ -83,7 +83,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             onMouseLeave={() => setIsHovering(false)}
         >
             <div className="border-border relative flex h-[30rem] justify-center border bg-neutral-200">
-                <img src={product.cover_image} className='w-full object-contain' alt=''/>
+                <img src={product.cover_image} className='w-full object-cover' alt=''/>
                 {product.sizes && product.sizes.length > 0 && (
                     <AnimatePresence>
                         {isHovering && (
@@ -113,7 +113,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
             <div className="flex items-center justify-between py-1">
                 <div className="flex flex-col items-start justify-start gap-1">
-                    <h3 className="text-sm font-medium text-gray-800 hover:text-gray-600">{product.name}</h3>
+                    <h3 className="text-sm font-medium text-gray-800 line-clamp-1 hover:text-gray-600">{product.name}</h3>
                     <p className="text-sm text-gray-500">{displayPrice}</p>
                 </div>
                 <div className="flex items-center">

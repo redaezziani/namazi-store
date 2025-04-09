@@ -21,7 +21,7 @@ class StoreProductController extends Controller
 public function getAllProducts(Request $request)
 {
     $perPage = $request->get('per_page', 10);
-    $products = Product::with('category')->paginate($perPage);
+    $products = Product::with('category')->latest()->paginate($perPage);
     $user = Auth::user();
 
 

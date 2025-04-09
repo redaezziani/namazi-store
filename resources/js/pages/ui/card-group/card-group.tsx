@@ -17,17 +17,17 @@ interface PaginationMeta {
   total: number;
 }
 
-const CardsGroup = ({ 
-    title, 
-    description, 
+const CardsGroup = ({
+    title,
+    description,
     urlQuery,
-    itemsPerPage = 8 
+    itemsPerPage = 8
 }: CardGroupProps) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
-  
+
   const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
@@ -46,7 +46,7 @@ const CardsGroup = ({
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchProducts();
   }, [itemsPerPage]);
@@ -102,15 +102,15 @@ const CardsGroup = ({
           <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-gray-800 transition-all duration-300 group-hover:w-full"></span>
         </h3>
       )}
-      
+
       {description && <p className="text-sm text-gray-500">{description}</p>}
-      
-      <article className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+      <article className="grid w-full grid-cols-2 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product, index) => (
           <ProductCard key={product.id || index} product={product} />
         ))}
       </article>
-      
+
       {meta && meta.last_page > 1 && (
         <CardsPagination
           currentPage={meta.current_page}
