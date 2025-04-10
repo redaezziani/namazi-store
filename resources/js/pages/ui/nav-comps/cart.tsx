@@ -95,9 +95,15 @@ const Cart = () => {
             </div>
 
             <SheetFooter className="flex-col gap-3 sm:flex-col">
-              <Button className="w-full py-6 rounded-none bg-black hover:bg-gray-800 text-white">
-                CHECKOUT
-              </Button>
+              <Link
+                href="/checkout"
+                className="w-full"
+                onClick={() => setOpen(false)}
+              >
+                <Button className="w-full py-6 rounded-none bg-black hover:bg-gray-800 text-white">
+                  CHECKOUT
+                </Button>
+              </Link>
               <Button variant="outline" className="w-full py-6 rounded-none border-gray-300" onClick={() => setOpen(false)}>
                 CONTINUE SHOPPING
               </Button>

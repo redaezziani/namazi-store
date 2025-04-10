@@ -79,36 +79,48 @@ const StoreHeader = () => {
                     <Cart />
                     <SearchProducts />
                     <AuthLinks />
-
-                    {/* {userLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.href}
-                            className="text-gray-600 hover:text-black text-sm transition-colors"
+                    <Link
+                        href="/favorites"
+                        className="flex items-center text-gray-500 hover:text-gray-800"
+                        title="Favorites"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
                         >
-                            {link.name === 'Search' ? (
-                                <span className="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </span>
-                            ) : link.name === 'Cart(0)' ? (
-                                <span className="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                    </svg>
-                                </span>
-                            ) : link.name === 'Like' ? (
-                                <span className="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                </span>
-                            ) : (
-                                link.name
-                            )}
-                        </Link>
-                    ))} */}
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                        </svg>
+                        <span className="ml-1 hidden md:inline">Favorites</span>
+                    </Link>
+                    <Link
+                        href="/orders"
+                        className="flex items-center text-gray-500 hover:text-gray-800"
+                        title="Orders"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                            />
+                        </svg>
+                        <span className="ml-1 hidden md:inline">Orders</span>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -214,6 +226,27 @@ const StoreHeader = () => {
                                 )}
                             </Link>
                         ))}
+                        <Link
+                            href="/orders"
+                            className="inline-flex items-center space-x-1 text-gray-600 hover:text-black"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                                />
+                            </svg>
+                            <span>Orders</span>
+                        </Link>
                     </div>
                 </div>
             </div>

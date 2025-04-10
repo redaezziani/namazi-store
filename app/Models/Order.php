@@ -15,20 +15,20 @@ class Order extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'order_number',
         'user_id',
+        'order_number',
         'status',
         'total',
-        'shipping_cost',
-        'tax',
-        'discount',
-        'coupon_id',
+        'shipping_name',
         'shipping_address',
-        'billing_address',
+        'shipping_city',
+        'shipping_state',
+        'shipping_postal_code',
+        'shipping_country',
+        'shipping_phone',
         'payment_method',
-        'payment_status',
-        'tracking_number',
-        'notes',
+        'payment_id',
+        'transaction_id',
     ];
 
     /**
@@ -40,26 +40,10 @@ class Order extends Model
     }
 
     /**
-     * Get the coupon that was used for the order.
-     */
-    public function coupon()
-    {
-        return $this->belongsTo(Coupon::class);
-    }
-
-    /**
      * Get the items for the order.
      */
     public function items()
     {
         return $this->hasMany(OrderItem::class);
-    }
-
-    /**
-     * Get the invoice for the order.
-     */
-    public function invoice()
-    {
-        return $this->hasOne(Invoice::class);
     }
 }

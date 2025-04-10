@@ -49,5 +49,36 @@ Route::get('/products/{slug}', function ($slug) {
     ]);
 })->name('product.details');
 
+// Add this route where other web routes are defined
+Route::get('/products', function () {
+    return Inertia::render('products');
+})->name('products');
+
+// Add this route for the favorites page
+Route::middleware(['auth'])->get('/favorites', function () {
+    return Inertia::render('favorites');
+})->name('favorites');
+
+// Add this route for the orders page
+Route::middleware(['auth'])->get('/orders', function () {
+    return Inertia::render('orders');
+})->name('orders');
+
+// Add these routes for cart and checkout
+Route::get('/cart', function () {
+    return Inertia::render('cart');
+})->name('cart');
+
+Route::middleware(['auth'])->get('/checkout', function () {
+    return Inertia::render('checkout');
+})->name('checkout');
+
+// Add this route for order confirmation
+Route::middleware(['auth'])->get('/orders/{id}', function ($id) {
+    return Inertia::render('order-confirmation', [
+        'orderId' => $id
+    ]);
+})->name('order.confirmation');
+
 
 

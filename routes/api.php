@@ -6,6 +6,7 @@ use App\Http\Controllers\RabbitMQController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\StoreProductController;
 use App\Http\Controllers\ScrapeController;
+use App\Http\Controllers\StoreOrderController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -44,10 +45,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Favorites routes
     // Route::apiResource('favorites', FavoriteController::class);
+
+    // Add this new route for getting user's favorites
+    Route::get('/store/favorites', [StoreProductController::class, 'getUserFavorites']);
+
+    // Order routes
+    Route::get('/store/orders', [StoreOrderController::class, 'getUserOrders']);
+    Route::get('/store/orders/{id}', [StoreOrderController::class, 'getOrderById']);
+
+    // Add checkout route
+    Route::post('/store/checkout', [StoreOrderController::class, 'checkout']);
 });
 
 // Store search routes
 Route::get('/store/products/search', [StoreProductController::class, 'searchProducts']);
+
+// Add this new route for filtered products
+Route::get('/store/products/filter', [StoreProductController::class, 'getFilteredProducts']);
 
 // Add this route for getting product details
 Route::get('/store/products/details/{slug}', [StoreProductController::class, 'getProductDetails']);
