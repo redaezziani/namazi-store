@@ -42,6 +42,7 @@ export default function ProductDetails() {
     const [quantity, setQuantity] = useState(1);
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [favorited, setFavorited] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
 
     const { addItem } = useCartStore();
     const { auth } = usePage().props as any;
@@ -98,10 +99,10 @@ export default function ProductDetails() {
             sku: product.sku,
         });
 
-        toast.success("Added to cart", {
-            description: "Item has been added to your cart",
+        toast.success("Added to bag", {
+            description: "Item has been added to your bag",
             action: {
-                label: "View Cart",
+                label: "View Bag",
                 onClick: () => {
                     window.location.href = '/cart';
                 },
@@ -149,7 +150,7 @@ export default function ProductDetails() {
             <>
                 <Head title="Loading Product" />
                 <StoreHeader />
-                <div className="container mx-auto mt-32 px-4">
+                <div className="container mx-auto mt-20 px-4">
                     <div className="flex h-[70vh] items-center justify-center">
                         <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
                     </div>
@@ -163,7 +164,7 @@ export default function ProductDetails() {
             <>
                 <Head title="Product Not Found" />
                 <StoreHeader />
-                <div className="container mx-auto mt-32 px-4">
+                <div className="container mx-auto mt-20 px-4">
                     <div className="flex h-[70vh] flex-col items-center justify-center">
                         <h1 className="text-2xl font-medium text-gray-800">Product Not Found</h1>
                         <p className="mt-2 text-gray-500">The product you're looking for doesn't exist or has been removed.</p>
@@ -180,213 +181,356 @@ export default function ProductDetails() {
         ? formatCurrency(Number(product.price))
         : 'Price not available';
 
+    const originalPrice = product.price !== undefined && product.price !== null
+        ? formatCurrency(Number(product.price) * 2) // Simulating original price before discount
+        : '';
+
     // Prepare image gallery
     const images = [product.cover_image, ...(product.preview_images || [])].filter(Boolean) as string[];
+
+    const handlePrevSlide = () => {
+        if (thumbsSwiper) {
+            thumbsSwiper.slidePrev();
+            setActiveIndex(thumbsSwiper.activeIndex);
+        }
+    };
+
+    const handleNextSlide = () => {
+        if (thumbsSwiper) {
+            thumbsSwiper.slideNext();
+            setActiveIndex(thumbsSwiper.activeIndex);
+        }
+    };
 
     return (
         <>
             <Head title={product.name} />
             <StoreHeader />
 
-            <main className="container mx-auto mt-32 px-4">
+            <main className="container mx-auto mt-20 px-4 py-8">
                 <div className="mb-6 flex items-center text-sm text-gray-500">
                     <a href="/" className="hover:text-gray-800">Home</a>
                     <span className="mx-2">/</span>
-                    <a href={`/category/${product.category}`} className="hover:text-gray-800">{product.category}</a>
+                    <a href="/women" className="hover:text-gray-800">Women</a>
                     <span className="mx-2">/</span>
-                    <span className="text-gray-800">{product.name}</span>
+                    <span className="text-gray-800 line-clamp-1">{product.name}</span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-                    {/* Product Images */}
-                    <div className="space-y-4">
-                        <Swiper
-                            spaceBetween={10}
-                            navigation={true}
-                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                            modules={[FreeMode, Navigation, Thumbs]}
-                            className="aspect-square w-full overflow-hidden bg-gray-100"
-                        >
+                <div className="grid max-w-6xl grid-cols-1 gap-10 lg:grid-cols-2">
+                    {/* Product Images - Left side thumbnails + main image */}
+                    <div className="flex gap-4">
+                        {/* Vertical thumbnails */}
+                        <div className="hidden w-20 flex-col gap-2 md:flex">
                             {images.map((image, index) => (
-                                <SwiperSlide key={index}>
-                                    <div className="relative h-full w-full">
-                                        <img
-                                            src={image}
-                                            alt={`${product.name} - Image ${index + 1}`}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    </div>
-                                </SwiperSlide>
+                                <div
+                                    key={index}
+                                    className={`cursor-pointer overflow-hidden border ${activeIndex === index ? 'border-black' : 'border-gray-200'}`}
+                                    onClick={() => {
+                                        if (thumbsSwiper) {
+                                            thumbsSwiper.slideTo(index);
+                                            setActiveIndex(index);
+                                        }
+                                    }}
+                                >
+                                    <img
+                                        src={image}
+                                        alt={`Thumbnail ${index + 1}`}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
                             ))}
-                        </Swiper>
+                        </div>
 
-                        {images.length > 1 && (
+                        {/* Main image with swiper */}
+                        <div className="relative max-w-sm flex-1">
                             <Swiper
-                                onSwiper={setThumbsSwiper}
                                 spaceBetween={10}
-                                slidesPerView={4}
-                                freeMode={true}
-                                watchSlidesProgress={true}
-                                modules={[FreeMode, Navigation, Thumbs]}
-                                className="thumbs mt-4 h-24"
+                                onSwiper={setThumbsSwiper}
+                                onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+                                className="aspect-[3/4] w-full overflow-hidden bg-gray-50"
                             >
                                 {images.map((image, index) => (
-                                    <SwiperSlide key={index} className="cursor-pointer overflow-hidden rounded border">
+                                    <SwiperSlide key={index}>
+                                        <div className="relative h-full w-full">
+                                            <img
+                                                src={image}
+                                                alt={`${product.name} - Image ${index + 1}`}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        </div>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+
+                            {/* Custom navigation buttons */}
+                            {images.length > 1 && (
+                                <div className="absolute bottom-4 right-4 flex gap-2">
+                                    <button
+                                        onClick={handlePrevSlide}
+                                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white  transition-transform hover:bg-gray-100"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="m15 18-6-6 6-6"/>
+                                        </svg>
+                                    </button>
+                                    <button
+                                        onClick={handleNextSlide}
+                                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white  transition-transform hover:bg-gray-100"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="m9 18 6-6-6-6"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Mobile thumbnails (visible on small screens) */}
+                            <div className="mt-4 flex gap-2 md:hidden">
+                                {images.slice(0, 4).map((image, index) => (
+                                    <div
+                                        key={index}
+                                        className={`h-16 w-16 cursor-pointer overflow-hidden border ${activeIndex === index ? 'border-black' : 'border-gray-200'}`}
+                                        onClick={() => {
+                                            if (thumbsSwiper) {
+                                                thumbsSwiper.slideTo(index);
+                                                setActiveIndex(index);
+                                            }
+                                        }}
+                                    >
                                         <img
                                             src={image}
                                             alt={`Thumbnail ${index + 1}`}
                                             className="h-full w-full object-cover"
                                         />
-                                    </SwiperSlide>
+                                    </div>
                                 ))}
-                            </Swiper>
-                        )}
+                                {images.length > 4 && (
+                                    <div className="flex h-16 w-16 items-center justify-center border bg-gray-50 text-sm">
+                                        +{images.length - 4}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Product Info */}
                     <div className="flex flex-col">
                         <div>
-                            <h1 className="text-2xl font-medium text-gray-900 sm:text-3xl">{product.name}</h1>
-                            <p className="mt-1 text-lg font-light text-gray-500">{product.category}</p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <p className="text-2xl font-medium text-gray-900">{displayPrice}</p>
-                                <button
-                                    onClick={handleFavoriteToggle}
-                                    className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
-                                    aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className={`h-6 w-6 cursor-pointer transition-colors duration-200 ${
-                                            favorited ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-gray-600'
+                            <h1 className="text-xl font-medium text-gray-900 sm:text-2xl">{product.name}</h1>
+
+                            {/* Rating stars */}
+                            <div className="mt-2 flex items-center">
+                                <div className="flex">
+                                    {Array(5).fill(0).map((_, i) => (
+                                        <svg
+                                            key={i}
+                                            className={`h-4 w-4 ${i < 2 ? "text-yellow-400" : "text-gray-300"}`}
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                    ))}
+                                </div>
+                                <span className="ml-2 text-sm text-gray-500">(54)</span>
+                                <button className="ml-4 text-sm font-medium text-gray-500 underline">
+                                    Share
+                                </button>
+                            </div>
+
+                            {/* Price section */}
+                            <div className="mt-4 flex items-center gap-2">
+                                <p className="text-xl font-medium text-red-600">{displayPrice}</p>
+                                <p className="text-sm text-gray-500 line-through">{originalPrice}</p>
+                            </div>
+
+                            {/* Payment options */}
+                            <div className="mt-2 text-sm text-gray-600">
+                                or 4 payments of $2.25 with
+                                <span className="mx-1 font-semibold">
+                                    <span className="text-blue-800">Pay</span><span className="text-blue-500">Pal</span>
+                                </span>
+                                <span className="mx-1 font-semibold">
+                                    <span className="rounded bg-green-600 px-1 text-white">Affirm</span>
+                                </span>
+                                <span className="mx-1 font-semibold">
+                                    <span className="rounded bg-pink-500 px-1 text-white">Klarna</span>
+                                </span>
+                            </div>
+
+                            {/* Sale badge */}
+                            <div className="mt-2">
+                                <span className="font-medium text-red-600">50% Off! Prices as Marked</span>
+                                <p className="text-sm text-gray-500">Final Sale</p>
+                            </div>
+                        </div>
+
+                        <Separator className="my-6" />
+
+                        {/* Size selector */}
+                        <div className="mb-6">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-gray-700">Size</label>
+                                <button className="text-sm text-gray-500 underline">View Size Guide</button>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                                {['S/M', 'L/XL', '1X/2X', '3X/4X'].map((size) => (
+                                    <button
+                                        key={size}
+                                        type="button"
+                                        onClick={() => setSelectedSize(size)}
+                                        className={`inline-flex h-10 min-w-16 items-center justify-center rounded-none border px-4 py-2 text-sm font-medium transition-colors
+                                            ${selectedSize === size
+                                            ? 'border-black bg-white text-black'
+                                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                                         }`}
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={1.5}
-                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                        />
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Color selector if needed */}
+                        {product.colors && product.colors.length > 0 && (
+                            <div className="mb-6">
+                                <label className="mb-2 block text-sm font-medium text-gray-700">Color</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.colors.map((color) => (
+                                        <button
+                                            key={color}
+                                            type="button"
+                                            onClick={() => setSelectedColor(color)}
+                                            className={`relative h-8 w-8 rounded-full border transition-transform
+                                                ${selectedColor === color ? 'border-black scale-110' : 'border-gray-300'}`}
+                                            style={{ backgroundColor: color }}
+                                            title={color}
+                                        >
+                                            <span className="sr-only">Color: {color}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Quantity selector */}
+                        <div className="mb-6">
+                            <label className="mb-2 block text-sm font-medium text-gray-700">Quantity</label>
+                            <div className="flex w-32 items-center rounded-none border">
+                                <button
+                                    type="button"
+                                    onClick={() => handleQuantityChange(-1)}
+                                    disabled={quantity <= 1}
+                                    className="inline-flex h-10 w-10 items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                                >
+                                    -
+                                </button>
+                                <input
+                                    type="text"
+                                    value={quantity}
+                                    readOnly
+                                    className="h-10 w-12 border-x border-gray-200 text-center focus:outline-none"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleQuantityChange(1)}
+                                    disabled={quantity >= (product.stock || 10)}
+                                    className="inline-flex h-10 w-10 items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Add to bag and favorite buttons */}
+                        <div className="mt-2 flex gap-2">
+                            <button
+                                type="button"
+                                onClick={handleAddToCart}
+                                className="flex-1 rounded-none bg-black px-5 py-3 text-white transition-colors hover:bg-gray-800"
+                            >
+                                Add to Bag
+                            </button>
+                            <button
+                                onClick={handleFavoriteToggle}
+                                className="flex h-12 w-12 items-center justify-center border border-gray-300 hover:bg-gray-50"
+                                aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className={`h-6 w-6 transition-colors duration-200 ${
+                                        favorited ? 'text-red-500 fill-red-500' : 'text-gray-400'
+                                    }`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={1.5}
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Product details accordion */}
+                        <div className="mt-8">
+                            <div className="border-b border-t border-gray-200">
+                                <button className="flex w-full items-center justify-between py-4 text-left">
+                                    <span className="text-sm font-medium text-gray-900">Product Details</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                                        <path d="m6 9 6 6 6-6"/>
                                     </svg>
                                 </button>
                             </div>
                         </div>
 
-                        <Separator className="my-6" />
-
-                        {/* Product description */}
-                        <div className="prose prose-sm max-w-none">
-                            <p>{product.description}</p>
-                        </div>
-
-                        <Separator className="my-6" />
-
-                        {/* Product options */}
-                        <div className="space-y-6">
-                            {/* Size selector */}
-                            {product.sizes && product.sizes.length > 0 && (
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Size</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {product.sizes.map((size) => (
-                                            <button
-                                                key={size}
-                                                type="button"
-                                                onClick={() => setSelectedSize(size)}
-                                                className={`inline-flex h-10 min-w-10 items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors
-                                                    ${selectedSize === size
-                                                    ? 'border-neutral-900 bg-neutral-900 text-white'
-                                                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                {size}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Color selector */}
-                            {product.colors && product.colors.length > 0 && (
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Color</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {product.colors.map((color) => (
-                                            <button
-                                                key={color}
-                                                type="button"
-                                                onClick={() => setSelectedColor(color)}
-                                                className={`relative h-10 w-10 rounded-full border-2 transition-transform
-                                                    ${selectedColor === color ? 'border-black scale-110' : 'border-gray-300'}`}
-                                                style={{ backgroundColor: color }}
-                                                title={color}
-                                            >
-                                                <span className="sr-only">Color: {color}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Quantity selector */}
-                            <div>
-                                <label className="mb-2 block text-sm font-medium text-gray-700">Quantity</label>
-                                <div className="flex w-32 items-center rounded-md border">
-                                    <button
-                                        type="button"
-                                        onClick={() => handleQuantityChange(-1)}
-                                        disabled={quantity <= 1}
-                                        className="inline-flex h-10 w-10 items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
-                                    >
-                                        -
-                                    </button>
-                                    <input
-                                        type="text"
-                                        value={quantity}
-                                        readOnly
-                                        className="h-10 w-12 border-0 text-center focus:outline-none"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleQuantityChange(1)}
-                                        disabled={quantity >= (product.stock || 10)}
-                                        className="inline-flex h-10 w-10 items-center justify-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
-                                    >
-                                        +
-                                    </button>
-                                </div>
+                        {/* Similar styles section */}
+                        <div className="mt-10">
+                            <h3 className="mb-4 text-lg font-medium text-gray-900">SEE 20+ SIMILAR STYLES</h3>
+                            <div className="grid grid-cols-4 gap-2">
+                                {Array(4).fill(0).map((_, i) => (
+                                    <a key={i} href="#" className="overflow-hidden border border-gray-200">
+                                        <img
+                                            src={`/api/placeholder/150/200`}
+                                            alt="Similar product"
+                                            className="aspect-[3/4] w-full object-cover"
+                                        />
+                                    </a>
+                                ))}
+                            </div>
+                            <div className="mt-4 text-center">
+                                <a href="#" className="inline-block rounded-full bg-black px-6 py-2 text-sm font-medium text-white">
+                                    Shop Similar
+                                </a>
                             </div>
                         </div>
 
-                        {/* Add to cart button */}
-                        <div className="mt-8">
-                            <button
-                                type="button"
-                                onClick={handleAddToCart}
-                                className="w-full rounded-md bg-black px-5 py-3 text-white transition-colors hover:bg-gray-800"
-                            >
-                                Add to Cart
-                            </button>
-                        </div>
-
-                        {/* Product meta */}
-                        <div className="mt-6 text-sm text-gray-500">
-                            <div className="flex items-center">
-                                <span className="mr-2 font-medium">SKU:</span> {product.sku}
-                            </div>
-                            {product.stock !== undefined && product.stock !== null && (
-                                <div className="mt-1 flex items-center">
-                                    <span className="mr-2 font-medium">Availability:</span>
-                                    <span className={product.stock > 0 ? 'text-green-600' : 'text-red-600'}>
-                                        {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="mt-1 flex items-center">
-                                <span className="mr-2 font-medium">Category:</span> {product.category}
+                        {/* Style it with section */}
+                        <div className="mt-10">
+                            <h3 className="mb-4 text-lg font-medium text-gray-900">STYLE IT WITH</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                {Array(2).fill(0).map((_, i) => (
+                                    <div key={i} className="relative overflow-hidden border border-gray-200">
+                                        <img
+                                            src={`/api/placeholder/200/250`}
+                                            alt="Style with product"
+                                            className="aspect-[4/5] w-full object-cover"
+                                        />
+                                        <button className="absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/>
+                                                <path d="M16.5 9.4 7.55 4.24"/>
+                                                <polyline points="3.29 7 12 12 20.71 7"/>
+                                                <line x1="12" y1="22" x2="12" y2="12"/>
+                                                <circle cx="18.5" cy="15.5" r="2.5"/>
+                                                <path d="M20.27 17.27 22 19"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
