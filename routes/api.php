@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RabbitMQController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\StoreProductController;
-use App\Http\Controllers\ScrapeController;
+use App\Http\Controllers\StoreCategoryController;
 use App\Http\Controllers\StoreOrderController;
+use App\Http\Controllers\ScrapeController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -65,6 +66,10 @@ Route::get('/store/products/filter', [StoreProductController::class, 'getFiltere
 
 // Add this route for getting product details
 Route::get('/store/products/details/{slug}', [StoreProductController::class, 'getProductDetails']);
+
+// Add these new routes for categories
+Route::get('/store/categories', [StoreCategoryController::class, 'getAllCategories']);
+Route::get('/store/categories/{slug}', [StoreCategoryController::class, 'getCategoryWithProducts']);
 
 // Search history routes (for authenticated users only)
 Route::middleware('auth:sanctum')->group(function () {

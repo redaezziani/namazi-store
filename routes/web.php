@@ -80,5 +80,17 @@ Route::middleware(['auth'])->get('/orders/{id}', function ($id) {
     ]);
 })->name('order.confirmation');
 
+// Add this route for the categories index page
+Route::get('/categories', function () {
+    return Inertia::render('categories/index');
+})->name('categories.index');
+
+// Add this route for the single category page
+Route::get('/categories/{slug}', function ($slug) {
+    return Inertia::render('categories/[slug]', [
+        'slug' => $slug
+    ]);
+})->name('categories.show');
+
 
 
