@@ -42,5 +42,12 @@ Route::middleware(['auth'])->group(function () {
     // Admin product scraping routes
 });
 
+// Add this route for product details
+Route::get('/products/{slug}', function ($slug) {
+    return Inertia::render('ProductDetails', [
+        'slug' => $slug
+    ]);
+})->name('product.details');
+
 
 

@@ -49,6 +49,9 @@ Route::middleware('auth:sanctum')->group(function () {
 // Store search routes
 Route::get('/store/products/search', [StoreProductController::class, 'searchProducts']);
 
+// Add this route for getting product details
+Route::get('/store/products/details/{slug}', [StoreProductController::class, 'getProductDetails']);
+
 // Search history routes (for authenticated users only)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/store/search/history', [StoreProductController::class, 'saveSearchHistory']);

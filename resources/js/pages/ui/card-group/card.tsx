@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from "framer-motion";
 // Import Swiper styles
 import 'swiper/css';
@@ -116,7 +116,9 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
             <div className="flex items-center justify-between py-1">
                 <div className="flex flex-col items-start justify-start gap-1">
+                    <Link href={productUrl} className="text-sm font-medium text-gray-800 line-clamp-1 hover:text-gray-600">
                     <h3 className="text-sm font-medium text-gray-800 line-clamp-1 hover:text-gray-600">{product.name}</h3>
+                    </Link>
                     <p className="text-sm text-gray-500">{displayPrice}</p>
                 </div>
                 <div className="flex items-center">

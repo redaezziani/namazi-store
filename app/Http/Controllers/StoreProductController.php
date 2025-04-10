@@ -65,13 +65,7 @@ public function setFavorite(Request $request, $id)
     $isFavorited = $request->input('is_favorited', false);
 
     $favorite = Favorite::where('user_id', $user->id)->where('product_id', $id)->first();
-    return response()->json($favorite);
-    if ($isFavorited && $favorite) {
-        return response()->json(['message' => 'Product is already favorited.']);
-    }
-    if (!$isFavorited && !$favorite) {
-        return response()->json(['message' => 'Product is not favorited.']);
-    }
+
     if ($isFavorited && !$favorite) {
         Favorite::create([
             'user_id' => $user->id,
@@ -207,6 +201,43 @@ public function clearSearchHistory()
     SearchHistory::where('user_id', $user->id)->delete();
 
     return response()->json(['message' => 'Search history cleared successfully']);
+}
+
+public function getProductDetails(Request $request, $slug)
+{
+    $product = Product::with('category')->where('slug', $slug)->first();
+
+    if (!$product) {
+        return response()->json(['message' => 'Product not found'], 404);
+    }
+
+    $user = Auth::user();
+    $isFavorited = false;
+
+    if ($user) {
+        $isFavorited = Favorite::where('user_id', $user->id)
+            ->where('product_id', $product->id)
+            ->exists();
+    }
+
+    $productData = [
+        'id' => $product->id,
+        'name' => $product->name,
+        'description' => $product->description,
+        'price' => $product->price,
+        'stock' => $product->quantity,
+        'sku' => $product->sku,
+        'slug' => $product->slug,
+        'sizes' => $product->sizes,
+        'colors' => $product->colors,
+        'is_featured' => $product->is_featured,
+        'category' => $product->category ? $product->category->name : 'Uncategorized',
+        'cover_image' => $product->cover_image,
+        'preview_images' => $product->preview_images,
+        'is_favorite' => $isFavorited,
+    ];
+
+    return response()->json($productData);
 }
 
 }
