@@ -25,7 +25,8 @@ interface Product {
     sizes?: string[];
     is_featured: boolean;
     category: string;
-    is_favorited?: boolean;
+    is_favorite?: boolean;
+
 }
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -76,6 +77,8 @@ const ProductCard = ({ product }: { product: Product }) => {
         handleAddToCart(size);
     };
 
+
+
     return (
         <article
             className="group col-span-1 flex w-full flex-col overflow-hidden transition-shadow"
@@ -117,7 +120,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                     <p className="text-sm text-gray-500">{displayPrice}</p>
                 </div>
                 <div className="flex items-center">
-                    <FavoriteProduct isFavorited={product.is_favorited ?? false} id={product.id} />
+                    <FavoriteProduct isFavorited={product.is_favorite ?? false} id={product.id} />
                 </div>
             </div>
         </article>
@@ -130,23 +133,42 @@ interface FavoriteProductProps {
 }
 
 const FavoriteProduct = ({ isFavorited, id }: FavoriteProductProps) => {
-    const props = usePage().props
+    const props = usePage().props;
     const { auth } = props;
     const [favorited, setFavorited] = useState(isFavorited);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleProductLike = async () => {
+        if (!auth?.user) {
+            // Handle unauthenticated user
+            toast.error("Please login to add favorites", {
+                description: "You need to be logged in to save favorites",
+                action: {
+                    label: "Login",
+                    onClick: () => {
+                        window.location.href = '/login';
+                    },
+                },
+            });
+            return;
+        }
+
         setIsLoading(true);
         try {
             const res = await axios.post(`/api/store/products/${id}/favorite`, {
                 is_favorited: !favorited,
             });
-            setFavorited(!favorited);
-            setIsLoading(false);
 
+            console.log('Response:', res.data);
+            setFavorited(!favorited);
+
+            // Show success message
+            toast.success(favorited ? "Removed from favorites" : "Added to favorites");
 
         } catch (error) {
             console.error('Error:', error);
+            toast.error("Failed to update favorite status");
+        } finally {
             setIsLoading(false);
         }
     };
@@ -157,11 +179,12 @@ const FavoriteProduct = ({ isFavorited, id }: FavoriteProductProps) => {
             onClick={handleProductLike}
             disabled={isLoading}
             className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+            aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className={`h-5 w-5 cursor-pointer transition-colors duration-200 ${
-                    favorited ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-gray-600'
+                    favorited ? 'text-red-500 ' : 'text-gray-400 hover:text-gray-600'
                 }`}
                 fill="none"
                 viewBox="0 0 24 24"

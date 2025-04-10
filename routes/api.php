@@ -19,7 +19,7 @@ Route::prefix('products')->group(function () {
     Route::post('/', [ProductController::class, 'store'])->middleware('auth:sanctum');
     Route::get('/{id}', [ProductController::class, 'show']);
     Route::put('/{id}', [ProductController::class, 'update'])->middleware('auth:sanctum');
-    Route::delete('/{id}', [ProductController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::delete('/{id?}', [ProductController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
 // Product search routes
@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/store/search/history', [StoreProductController::class, 'clearSearchHistory']);
 });
 
-Route::post('/store/products/{id}/favorite', [StoreProductController::class, 'setFavorite']);
+Route::post('/store/products/{id}/favorite', [StoreProductController::class, 'setFavorite'])->middleware('auth:sanctum');
 
 Route::get('/store/products', [StoreProductController::class, 'getAllProducts']);
 

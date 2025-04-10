@@ -48,3 +48,19 @@ window.Echo.connector.pusher.connection.bind('error', (error: any) => {
         port: port
     });
 });
+
+
+import axios from 'axios';
+
+declare global {
+    interface Window {
+        axios: typeof axios;
+    }
+}
+
+window.axios = axios;
+
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.withCredentials = true; // Important for authentication
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;

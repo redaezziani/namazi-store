@@ -28,6 +28,7 @@ public function getAllProducts(Request $request)
     $favoriteProductIds = [];
     if ($user) {
         $favoriteProductIds = Favorite::where('user_id', $user->id)->pluck('product_id')->toArray();
+
     }
 
     $products->getCollection()->transform(function ($product) use ($favoriteProductIds) {
@@ -64,7 +65,13 @@ public function setFavorite(Request $request, $id)
     $isFavorited = $request->input('is_favorited', false);
 
     $favorite = Favorite::where('user_id', $user->id)->where('product_id', $id)->first();
-
+    return response()->json($favorite);
+    if ($isFavorited && $favorite) {
+        return response()->json(['message' => 'Product is already favorited.']);
+    }
+    if (!$isFavorited && !$favorite) {
+        return response()->json(['message' => 'Product is not favorited.']);
+    }
     if ($isFavorited && !$favorite) {
         Favorite::create([
             'user_id' => $user->id,

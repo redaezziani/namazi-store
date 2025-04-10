@@ -186,19 +186,63 @@ class ProductController extends Controller
     }
 
     /**
-     * Remove the specified product.
+     * Delete a single product or multiple products by their IDs.
      *
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int|null  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id = null)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+        // Check if user is authenticated
+        if (!$request->user()) {
+            return response()->json([
+                'message' => 'Unauthenticated. Please log in to perform this action.'
+            ], 401);
+        }
 
-        return response()->json([
-            'message' => 'Product deleted successfully'
+        // If ID is provided in URL, delete a single product
+        if ($id !== null) {
+            try {
+                $product = Product::findOrFail($id);
+                $product->delete();
+
+                return response()->json([
+                    'message' => 'Product deleted successfully'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Failed to delete product',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        }
+
+        // Otherwise, validate and delete multiple products
+        $validator = Validator::make($request->all(), [
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            Product::whereIn('id', $request->ids)->delete();
+
+            return response()->json([
+                'message' => 'Products deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete products',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

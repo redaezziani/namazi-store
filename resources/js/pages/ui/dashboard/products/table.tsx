@@ -6,10 +6,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronsLeft, ChevronsRight, Delete } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Delete, Trash2 } from 'lucide-react';
 import FilterBar, { FilterValues } from './filter-bar';
 import { ProductSheet } from './product-sheet';
 import DeleteProduct from './delete';
+import { Button } from '@/components/ui/button';
+import BulkDeleteProducts from './bulk-delete';
 
 // Enhanced Product interface with more properties
 interface Product {
@@ -68,6 +70,11 @@ export default function ProductsTable() {
         priceRange: null,
     });
     const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+
+    // Add state for selected products
+    const [selectedProducts, setSelectedProducts] = useState<(string | number)[]>([]);
+    const [selectAll, setSelectAll] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     // Pagination state
     const [pagination, setPagination] = useState({
@@ -188,6 +195,38 @@ export default function ProductsTable() {
         fetchProducts(page);
     };
 
+    // Handle select all checkbox
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelectedProducts([]);
+        } else {
+            const allProductIds = products.map(product => product.id);
+            setSelectedProducts(allProductIds);
+        }
+        setSelectAll(!selectAll);
+    };
+
+    // Handle individual product selection
+    const handleSelectProduct = (productId: string | number) => {
+        if (selectedProducts.includes(productId)) {
+            setSelectedProducts(selectedProducts.filter(id => id !== productId));
+            setSelectAll(false);
+        } else {
+            setSelectedProducts([...selectedProducts, productId]);
+            if (selectedProducts.length + 1 === products.length) {
+                setSelectAll(true);
+            }
+        }
+    };
+
+    // Handle bulk deletion success
+    const handleBulkDeleteSuccess = () => {
+        setSelectedProducts([]);
+        setSelectAll(false);
+        fetchProducts(pagination.currentPage);
+        setIsDeleteDialogOpen(false);
+    };
+
     // Calculate total price of all products on current page
     const totalPrice =
         Array.isArray(products) && products.length > 0 ? products.reduce((sum, product) => sum + (product.price || 0), 0).toFixed(2) : '0.00';
@@ -228,12 +267,34 @@ export default function ProductsTable() {
                 />
             </div>
 
+            {/* Bulk actions bar */}
+            {selectedProducts.length > 0 && (
+                <div className="mb-4 flex w-full items-center justify-between rounded-md bg-muted p-2">
+                    <span className="text-sm font-medium">
+                        {selectedProducts.length} product{selectedProducts.length > 1 ? 's' : ''} selected
+                    </span>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-1"
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Selected
+                    </Button>
+                </div>
+            )}
+
             <div className="bg-background w-full overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
                         <TableRow className="hover:bg-transparent">
                             <TableHead className="h-11">
-                                <Checkbox id={id} />
+                                <Checkbox
+                                    id={id}
+                                    checked={selectAll}
+                                    onCheckedChange={handleSelectAll}
+                                />
                             </TableHead>
                             <TableHead className="h-11">SKU</TableHead>
                             <TableHead className="h-11">Name</TableHead>
@@ -300,10 +361,21 @@ export default function ProductsTable() {
                             products.map((product) => (
                                 <TableRow key={product.id}>
                                     <TableCell>
-                                        <Checkbox id={`table-checkbox-${product.id}`} />
+                                        <Checkbox
+                                            id={`table-checkbox-${product.id}`}
+                                            checked={selectedProducts.includes(product.id)}
+                                            onCheckedChange={() => handleSelectProduct(product.id)}
+                                        />
                                     </TableCell>
                                     <TableCell className="font-mono text-xs">{product.sku}</TableCell>
-                                    <TableCell className="font-medium">{product.name}</TableCell>
+                                    <TableCell className="font-medium flex justify-start items-center gap-1">
+                                        <img
+                                            src={product.cover_image}
+                                            alt={product.name}
+                                            className="h-8 w-8 rounded-md object-cover"
+                                        />
+                                        {product.name}
+                                        </TableCell>
                                     <TableCell>
                                         {product.description?.slice(0, 50)}
                                         {(product.description?.length ?? 0 > 50) ? '...' : ''}
@@ -421,6 +493,15 @@ export default function ProductsTable() {
                     </Pagination>
                 </div>
             )}
+
+            {/* Bulk delete dialog */}
+            <BulkDeleteProducts
+                isOpen={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                productIds={selectedProducts}
+                productCount={selectedProducts.length}
+                onSuccess={handleBulkDeleteSuccess}
+            />
         </div>
     );
 }
