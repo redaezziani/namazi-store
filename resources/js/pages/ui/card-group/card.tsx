@@ -86,7 +86,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             onMouseLeave={() => setIsHovering(false)}
         >
             <div className="border-border relative flex h-[30rem] justify-center border bg-neutral-200">
-                <img src={product.cover_image} className='w-full object-cover' alt=''/>
+                <img src={product.cover_image} className='w-full mix-blend-multiply object-cover' alt=''/>
                 {product.sizes && product.sizes.length > 0 && (
                     <AnimatePresence>
                         {isHovering && (

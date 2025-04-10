@@ -76,7 +76,7 @@ export default function BulkDeleteProducts({ isOpen, onOpenChange, productIds, p
                             handleDelete();
                         }}
                         disabled={isDeleting}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        className=""
                     >
                         {isDeleting ? (
                             <>

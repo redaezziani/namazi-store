@@ -21,7 +21,7 @@ const CardsGroup = ({
     title,
     description,
     urlQuery,
-    itemsPerPage = 8
+    itemsPerPage = 10
 }: CardGroupProps) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -105,7 +105,7 @@ const CardsGroup = ({
 
       {description && <p className="text-sm text-gray-500">{description}</p>}
 
-      <article className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <article className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {products.map((product, index) => (
           <ProductCard key={product.id || index} product={product} />
         ))}
