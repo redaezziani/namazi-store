@@ -1,8 +1,7 @@
 # UI Kit
 
 A modern UI component library and e-commerce starter kit built with Laravel, React, and Tailwind CSS.
-
-![UI Kit Banner](https://via.placeholder.com/1200x300/5a67d8/FFFFFF?text=UI+Kit+Banner)
+![UI Kit Cover](./cover.webp)
 
 ## 🌟 Overview
 
